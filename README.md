@@ -2,24 +2,49 @@
 
 An end-to-end web application that tracks political promises made by Indian ministers, ingests related news using AI, and presents performance analytics and dashboards.
 
-## 🖼️ Screenshots
+## 🖼️ Project Showcase
 
+### **Platform Interface**
 <p align="center">
-  <img src="screenshots/dashboard.png" alt="Dashboard Overview" width="800">
+  <img src="screenshots/website-home-page.png" alt="Political Promise Tracker Home" width="850">
   <br>
-  <em>Main Dashboard - Analytics and Performance Overview</em>
+  <em>Main Landing Page - Modern UI with Dark Mode Support</em>
+</p>
+
+### **Deployment & Infrastructure**
+<p align="center">
+  <table align="center">
+    <tr>
+      <td align="center">
+        <img src="screenshots/vercel.png" alt="Vercel Deployment" width="400">
+        <br>
+        <strong>Vercel (Frontend)</strong>
+      </td>
+      <td align="center">
+        <img src="screenshots/render.png" alt="Render Deployment" width="400">
+        <br>
+        <strong>Render (Backend)</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src="screenshots/docker-repo.png" alt="DockerHub Repositories" width="400">
+        <br>
+        <strong>DockerHub Repositories</strong>
+      </td>
+      <td align="center">
+        <img src="screenshots/mongodb-atlas.png" alt="MongoDB Atlas" width="400">
+        <br>
+        <strong>MongoDB Atlas Cluster</strong>
+      </td>
+    </tr>
+  </table>
 </p>
 
 <p align="center">
-  <img src="screenshots/minister-profile.png" alt="Minister Profile" width="800">
+  <img src="screenshots/google-0auth.png" alt="Google OAuth Console" width="850">
   <br>
-  <em>Minister Profile - Detailed Promise Tracking</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/chatbot.png" alt="AI Chatbot" width="400">
-  <br>
-  <em>AI Assistant - Chat with our platform for promise-related queries</em>
+  <em>Google OAuth 2.0 Configuration for Secure Authentication</em>
 </p>
 
 ## 🚀 Features
