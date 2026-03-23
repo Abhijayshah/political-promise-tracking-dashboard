@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../lib/api.js';
+import { apiPost } from '../lib/api.js';
 import { useAuth } from '../hooks/useAuth.js';
 import { GoogleLogin } from '@react-oauth/google';
 
@@ -17,13 +17,7 @@ export default function Auth() {
   async function handleGoogleSuccess(credentialResponse) {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialResponse.credential })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Google login failed');
+      const data = await apiPost('/api/auth/google', { credential: credentialResponse.credential });
       
       login(data.token, data.user);
       setStatus(`Logged in as ${data.user?.email}`);
@@ -39,9 +33,7 @@ export default function Auth() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
+      const data = await apiPost('/api/auth/login', { email, password });
       login(data.token, data.user);
       setStatus(`Logged in as ${data.user?.email}`);
       navigate(data.user?.role === 'admin' ? '/admin' : '/');
@@ -56,9 +48,7 @@ export default function Auth() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/auth/signup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Signup failed');
+      const data = await apiPost('/api/auth/signup', { name, email, password });
       login(data.token, data.user);
       setStatus(`Signed up as ${data.user?.email}`);
       navigate('/');

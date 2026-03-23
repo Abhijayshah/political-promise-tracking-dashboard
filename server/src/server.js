@@ -27,9 +27,27 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
 const app = express();
 
+// Robust CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5001',
+  process.env.SITE_URL?.replace(/\/$/, ''), // URL without trailing slash
+  process.env.SITE_URL // URL with trailing slash
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.SITE_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(o => o.startsWith(origin))) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
