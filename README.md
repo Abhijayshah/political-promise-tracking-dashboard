@@ -1,4 +1,4 @@
-# Political Promise Tracker
+# Political Promise Tracker --
 
 An end-to-end web application that tracks political promises made by Indian ministers, ingests related news using AI, and presents performance analytics and dashboards.
 
