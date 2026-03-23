@@ -42,6 +42,7 @@ political-promise-tracker-capstone/
 │   │   └── main.jsx            # Entry point
 │   ├── tailwind.config.js      # Theme and color configuration
 │   └── vite.config.js          # Build configuration
+├── screenshots/                # Project screenshots for documentation
 ├── server/                     # Backend Node.js application
 │   ├── scripts/                # Data seeding and utility scripts
 │   ├── src/

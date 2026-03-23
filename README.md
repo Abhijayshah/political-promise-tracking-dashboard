@@ -2,6 +2,26 @@
 
 An end-to-end web application that tracks political promises made by Indian ministers, ingests related news using AI, and presents performance analytics and dashboards.
 
+## 🖼️ Screenshots
+
+<p align="center">
+  <img src="screenshots/dashboard.png" alt="Dashboard Overview" width="800">
+  <br>
+  <em>Main Dashboard - Analytics and Performance Overview</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/minister-profile.png" alt="Minister Profile" width="800">
+  <br>
+  <em>Minister Profile - Detailed Promise Tracking</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/chatbot.png" alt="AI Chatbot" width="400">
+  <br>
+  <em>AI Assistant - Chat with our platform for promise-related queries</em>
+</p>
+
 ## 🚀 Features
 
 - **Minister Dashboard**: detailed profiles, promise completion rates, and trend analysis.
