@@ -119,3 +119,15 @@ npm run dev
 ## 📜 License
 
 This project is licensed under the MIT License.
+
+
+
+### 1. Which credentials do you actually need?
+You need to provide 6 core credentials for the project to be fully functional:
+
+1. MONGO_URI : Your MongoDB Atlas link (or use the local Docker one).
+2. JWT_SECRET : Any long random string (used for securing user logins).
+3. GOOGLE_CLIENT_ID : From your Google Cloud Console (for Google Login).
+4. GEMINI_API_KEY : From Google AI Studio.
+5. OPENROUTER_API_KEY : From OpenRouter (for the Chatbot).
+6. VITE_API_URL : The link where your backend is running.

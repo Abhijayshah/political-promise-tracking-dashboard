@@ -189,7 +189,70 @@ political-promise-tracker-capstone/
 
 ---
 
-## 12. FUTURE SECTIONS (Placeholder)
+## 12. DOCKER & TEAM COLLABORATION FAQ
+
+### **Q: Do I need to add real credentials (API keys, DB links) to the Docker images?**
+**A:** **No.** Docker images should only contain the code and dependencies. Secrets should never be baked into images. Instead, use the `environment` section in `docker-compose.yml` or an `.env` file to pass these values at runtime.
+
+### **Q: Should I hardcode real credentials in `docker-compose.yml` for my team?**
+**A:** **No.** For a team project, use `${VARIABLE_NAME}` syntax in `docker-compose.yml`. Each team member should create their own local `.env` file based on `.env.example`. This prevents sensitive keys from being pushed to GitHub or DockerHub.
+
+### **Q: Do I need to change the `MONGO_URI` in `docker-compose.yml`?**
+**A:** It depends:
+- To use the **Local Docker MongoDB**: Keep it as `mongodb://mongodb:27017/political_db`.
+- To use **MongoDB Atlas**: Update it to your actual `mongodb+srv://...` connection string.
+
+### **Q: When do I need to re-build and push images to DockerHub?**
+**A:** Only when the **source code** (`.js`, `.jsx`, `.css`) or **dependencies** change. If you only change a value in your `.env` file or `docker-compose.yml`, you just need to run `docker compose up -d` again.
+
+### Q: Where do the Google OAuth credentials go?
+**A:** They belong in the `backend` environment variables. Ensure the `GOOGLE_CLIENT_ID` is available to the server at runtime via the `.env` file.
+
+---
+
+## 13. TEAMMATE QUICK START (DOCKER)
+
+If you are a teammate starting work on this project for the first time, follow these steps:
+
+1.  **Install Docker Desktop**: Ensure Docker is running on your machine.
+2.  **Setup Environment**: 
+    - Copy `.env.example` to a new file named `.env`.
+    - Ask the team lead for the real API keys and DB links, or use your own.
+3.  **Launch the Project**:
+    ```bash
+    docker compose up -d
+    ```
+4.  **Access the App**:
+    - Frontend: [http://localhost:5173](http://localhost:5173)
+    - Backend: [http://localhost:5001](http://localhost:5001)
+5.  **Making Changes**:
+    - If you edit the code, you must rebuild the local images to see changes in Docker:
+      ```bash
+      docker compose up --build
+      ```
+
+---
+
+## 14. FUTURE SECTIONS (Placeholder)
 - [TODO: Document specific AI prompt templates used in `geminiClassifier.js`]
 - [TODO: Add detailed schema diagrams for Mongoose models]
 - [TODO: Document API rate limiting and security headers implementation]
+
+
+
+### Summary
+- Dockerfile = Recipe
+- Docker Image = The pre-packaged result (on DockerHub)
+- docker-compose.yml = The instructions on how to run everything together.
+- Container = The actual app running on your computer.
+
+
+### 1. Which credentials do you actually need?
+You need to provide 6 core credentials for the project to be fully functional:
+
+1. MONGO_URI : Your MongoDB Atlas link (or use the local Docker one).
+2. JWT_SECRET : Any long random string (used for securing user logins).
+3. GOOGLE_CLIENT_ID : From your Google Cloud Console (for Google Login).
+4. GEMINI_API_KEY : From Google AI Studio.
+5. OPENROUTER_API_KEY : From OpenRouter (for the Chatbot).
+6. VITE_API_URL : The link where your backend is running.

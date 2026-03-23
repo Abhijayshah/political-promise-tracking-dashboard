@@ -1,0 +1,49 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mern-network
+
+  backend:
+    image: abhijayshah/promise-backend:latest
+    container_name: backend
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/political_db}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - PORT=5001
+      - NODE_ENV=production
+      - SITE_URL=${SITE_URL:-http://localhost:5173}
+    depends_on:
+      - mongodb
+    networks:
+      - mern-network
+
+  frontend:
+    image: abhijayshah/promise-frontend:latest
+    container_name: frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:5001}
+    depends_on:
+      - backend
+    networks:
+      - mern-network
+
+networks:
+  mern-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
