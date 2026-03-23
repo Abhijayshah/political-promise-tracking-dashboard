@@ -15,6 +15,7 @@ const parser = new Parser({
 });
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const genAI = GEMINI_KEY ? new GoogleGenerativeAI(GEMINI_KEY) : null;
 
 function buildBatchPrompt(items, ministers, rules) {
@@ -64,34 +65,70 @@ function buildBatchPrompt(items, ministers, rules) {
   return `${header}\n${JSON.stringify(payload)}`;
 }
 
-export async function callGemini(prompt, modelName = 'gemini-2.5-flash') {
-  if (!genAI) throw new Error('GEMINI_API_KEY not configured');
+export async function callGemini(prompt, modelName = 'google/gemini-2.0-flash-001') {
+  // Try OpenRouter first if key is available, as it might be the user's preference
+  if (OPENROUTER_API_KEY) {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "HTTP-Referer": process.env.SITE_URL || 'http://localhost:5173',
+          "X-Title": process.env.SITE_NAME || 'Political Promise Tracker',
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "model": modelName,
+          "messages": [{ role: "user", content: prompt }],
+          "temperature": 0.1, // Lower temperature for classification
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenRouter API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const text = data.choices[0].message.content;
+      return parseAIResponse(text);
+    } catch (err) {
+      console.warn('OpenRouter call failed, falling back to direct Gemini if possible:', err.message);
+      if (!genAI) throw err;
+    }
+  }
+
+  // Fallback to direct Gemini SDK
+  if (!genAI) throw new Error('Neither GEMINI_API_KEY nor OPENROUTER_API_KEY is configured');
+  
   try {
-    const model = genAI.getGenerativeModel({ model: modelName });
+    const model = genAI.getGenerativeModel({ model: modelName.replace('google/', '') });
     const result = await model.generateContent(prompt);
     let text = result?.response?.text?.();
-    if (!text) throw new Error('No text returned from Gemini');
-    let cleaned = String(text).trim();
-    cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```\s*$/i, '');
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      const startArr = cleaned.indexOf('[');
-      const endArr = cleaned.lastIndexOf(']');
-      const startObj = cleaned.indexOf('{');
-      const endObj = cleaned.lastIndexOf('}');
-      if (startArr !== -1 && endArr !== -1 && endArr > startArr) {
-        parsed = JSON.parse(cleaned.slice(startArr, endArr + 1));
-      } else if (startObj !== -1 && endObj !== -1 && endObj > startObj) {
-        parsed = JSON.parse(cleaned.slice(startObj, endObj + 1));
-      } else {
-        throw new Error('JSON parse failed');
-      }
-    }
-    return parsed;
+    return parseAIResponse(text);
   } catch (err) {
     throw new Error('Gemini call error: ' + (err.message || String(err)));
+  }
+}
+
+function parseAIResponse(text) {
+  if (!text) throw new Error('No text returned from AI');
+  let cleaned = String(text).trim();
+  cleaned = cleaned.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```\s*$/i, '');
+  
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const startArr = cleaned.indexOf('[');
+    const endArr = cleaned.lastIndexOf(']');
+    const startObj = cleaned.indexOf('{');
+    const endObj = cleaned.lastIndexOf('}');
+    if (startArr !== -1 && endArr !== -1 && endArr > startArr) {
+      return JSON.parse(cleaned.slice(startArr, endArr + 1));
+    } else if (startObj !== -1 && endObj !== -1 && endObj > startObj) {
+      return JSON.parse(cleaned.slice(startObj, endObj + 1));
+    } else {
+      throw new Error('JSON parse failed');
+    }
   }
 }
 

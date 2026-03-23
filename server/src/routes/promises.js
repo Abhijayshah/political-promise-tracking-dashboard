@@ -6,20 +6,30 @@ import { requireAuth } from '../middleware/auth.js';
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const { status, minister } = req.query;
-  const filter = {};
-  if (status) {
-    filter.status = status;
+  try {
+    const { status, minister } = req.query;
+    const filter = {};
+    if (status) {
+      filter.status = status;
+    }
+    if (minister) filter.minister = minister;
+    const raw = await PromiseModel.find(filter).populate('minister').sort({ createdAt: -1 });
+    res.json(raw || []);
+  } catch (e) {
+    console.error('Fetch promises error:', e);
+    res.status(500).json({ error: 'Failed to fetch promises' });
   }
-  if (minister) filter.minister = minister;
-  const raw = await PromiseModel.find(filter).populate('minister').sort({ createdAt: -1 });
-  res.json(raw);
 });
 
 router.get('/:id', async (req, res) => {
-  const p = await PromiseModel.findById(req.params.id).populate('minister');
-  if (!p) return res.status(404).json({ error: 'Not found' });
-  res.json(p);
+  try {
+    const p = await PromiseModel.findById(req.params.id).populate('minister');
+    if (!p) return res.status(404).json({ error: 'Not found' });
+    res.json(p);
+  } catch (e) {
+    console.error('Fetch single promise error:', e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 router.get('/:id/related-news', async (req, res) => {

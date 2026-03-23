@@ -4,6 +4,13 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const router = Router();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -13,6 +20,8 @@ router.post('/google', async (req, res) => {
     const { credential } = req.body;
     if (!credential) return res.status(400).json({ error: 'Missing Google token' });
 
+    console.log('Verifying Google token with audience:', process.env.GOOGLE_CLIENT_ID);
+    
     // Verify token
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
